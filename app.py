@@ -1,32 +1,35 @@
-import json 
-                
-def find_meaning(word):
-    with open('data.json') as f:
-        data = json.load(f)
-        output =''
-    try:
-        if word.lower() in data:
-            output = data[word.lower()]  
-        else:
-            print(f"{word} not found. Please double check")   
-            output = ''   
-    except Exception as e:
-        print(f"Error is {e}")
+"""English dictionary applicaion."""
+import json
+import difflib
+from difflib import get_close_matches
+
+data = json.load(open('data.json'))
+
+def output(meaning):
+    num_meaning = len(meaning)
+    print(f"It has {num_meaning} meanings.")
+    for m in meaning:
+        print(f"=> {m}")
+
+
+def translate(word):
+    word = word.lower()
+    if word in data:
+        meaning = data[word]
+        output(meaning)
+    elif len(get_close_matches(word,data.keys())) > 0:
+        match = input(f"Did you mean {get_close_matches(word,data.keys())[0]} instead? (y/n) ")
+        if match.lower() == "y" or match.lower() == "yes":
+            meaning = data[get_close_matches(word,data.keys())[0]]
+            #print(meaning)
+            output(meaning)
     else:
-        if output != '':
-            print(f"{word} has {len(output)} meaning")
-            print(f"{word} means: ")
-            for o in output:
-                print(f"=> {o}\n")    
+        print(f'"{word}" is not found. Please double check.')
+    
+def init():
+    word = input('Enter a word: ')
+    translate(word)
+    
 
-word = input('Enter a word: ')
-
-find_meaning(word)
-
-
-
-        
-    # for k,v in data.items():
-    #     if word.lower() in k:
-    #         print(f"{k} means: {v}")
-            
+if __name__ == '__main__':
+    init()             
